@@ -223,6 +223,8 @@ export function initDb(
 }
 
 export function getUnifiedApiKey(): string {
+  const envKey = process.env.FREEAPI_UNIFIED_API_KEY?.trim();
+  if (envKey) return envKey;
   const db = getDb();
   const row = db.prepare("SELECT value FROM settings WHERE key = 'unified_api_key'").get() as { value: string };
   return row.value;
