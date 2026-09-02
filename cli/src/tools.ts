@@ -220,12 +220,15 @@ function aider(ctx: GenerateContext): Generation {
 }
 
 function opencode(ctx: GenerateContext): Generation {
-  const modelEntries = Object.fromEntries(ctx.models
-    .filter(model => model.id !== 'auto')
+const modelEntries = Object.fromEntries(
+  ctx.models
+    // `auto` — the router picking the best model per request — is the whole
+    // point of the gateway (see primaryModel above), so it has to stay in the
+    // roster OpenCode's picker shows, not just be the CLI's own default.
     .map(model => [model.id, {
       name: model.name ?? model.id,
-      limit: { context: contextWindow(model) },
-    }]));
+      limit: { context: contextWindow(model), output: outputLimit(model) },
+  }]));
   return {
     files: [{
       path: path.join(ctx.homeDir, '.config', 'opencode', 'opencode.json'),

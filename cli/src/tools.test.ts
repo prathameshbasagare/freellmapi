@@ -53,6 +53,14 @@ describe('tool generators', () => {
     const codex = tools.find(tool => tool.id === 'codex')!.generate(liveContext);
     expect(codex.files[0].content).toContain('model = "auto"');
     expect(codex.files[0].content).not.toContain('"fusion"');
+    // OpenCode's picker has to offer `auto` as a selectable model, not just
+    // default to it elsewhere — omitting it here would make the router's
+    // whole point unreachable from OpenCode's UI.
+    const opencode = tools.find(tool => tool.id === 'opencode')!.generate(liveContext);
+    const opencodeModels = (opencode.files[0].value as {
+      provider: { freellmapi: { models: Record<string, unknown> } };
+    }).provider.freellmapi.models;
+    expect(opencodeModels).toHaveProperty('auto');
   });
 
   for (const tool of tools) {
